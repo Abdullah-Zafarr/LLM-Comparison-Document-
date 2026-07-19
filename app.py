@@ -310,4 +310,80 @@ with tab_tokenizer:
         )
 
 # -------------------------------------------------------------
-# Tab 3 stub will be added next
+# TAB 3: ECONOMICS & CACHING SIMULATOR
+# -------------------------------------------------------------
+with tab_economics:
+    st.markdown("<div class='section-header'>Cost & Caching Simulator</div>", unsafe_allow_html=True)
+    st.markdown(
+        "Analyze the monthly API costs of deploying a Retrieval-Augmented Generation (RAG) pipeline vs. a Long-Context architecture. "
+        "See how **Prompt Caching** (supported by Claude 4.7 and Gemini Pro) reduces operational expenses."
+    )
+
+    col_sim_left, col_sim_right = st.columns([1, 2])
+    
+    with col_sim_left:
+        st.markdown("### Simulation Inputs")
+        doc_size_words = st.number_input("Source Document Length (Words)", min_value=1000, max_value=2000000, value=150000, step=10000)
+        queries_per_month = st.number_input("Queries per Month", min_value=10, max_value=100000, value=2000, step=500)
+        
+        st.markdown("#### Pricing Parameters")
+        input_price_per_m = st.number_input("Base Input Token Price ($ per Million)", min_value=0.1, max_value=30.0, value=3.0, step=0.1)
+        output_price_per_m = st.number_input("Output Token Price ($ per Million)", min_value=0.5, max_value=100.0, value=15.0, step=0.5)
+        cache_discount = st.slider("Prompt Caching Discount (%)", 50, 95, 90)
+
+    # Conversions (avg 1.33 tokens per word)
+    doc_tokens = int(doc_size_words * 1.33)
+    avg_query_tokens = 50
+    avg_rag_tokens = 2500
+    avg_out_tokens = 400
+
+    # RAG Cost
+    rag_input_cost = queries_per_month * (avg_rag_tokens / 1_000_000) * input_price_per_m
+    rag_output_cost = queries_per_month * (avg_out_tokens / 1_000_000) * output_price_per_m
+    total_rag_cost = rag_input_cost + rag_output_cost
+
+    # Long-Context Cost (No Caching)
+    lc_input_cost = queries_per_month * ((doc_tokens + avg_query_tokens) / 1_000_000) * input_price_per_m
+    lc_output_cost = queries_per_month * (avg_out_tokens / 1_000_000) * output_price_per_m
+    total_lc_cost = lc_input_cost + lc_output_cost
+
+    # Long-Context Cost (With Prompt Caching)
+    cache_read_price = input_price_per_m * (1 - cache_discount / 100)
+    first_call_input_cost = ((doc_tokens + avg_query_tokens) / 1_000_000) * input_price_per_m
+    remaining_calls_input_cost = (queries_per_month - 1) * (((doc_tokens + avg_query_tokens) / 1_000_000) * cache_read_price)
+    total_lcc_cost = first_call_input_cost + remaining_calls_input_cost + (queries_per_month * (avg_out_tokens / 1_000_000) * output_price_per_m)
+
+    with col_sim_right:
+        st.markdown("### Monthly Projection Comparison")
+        
+        sim_data = pd.DataFrame({
+            "Architecture": ["RAG Architecture", "Long-Context (No Cache)", "Long-Context (With Cache)"],
+            "Monthly Cost ($)": [total_rag_cost, total_lc_cost, total_lcc_cost]
+        })
+        
+        fig_cost = px.bar(
+            sim_data,
+            x="Architecture",
+            y="Monthly Cost ($)",
+            color="Architecture",
+            text="Monthly Cost ($)",
+            title="Estimated Monthly API Costs (USD)",
+            color_discrete_sequence=["#10B981", "#EF4444", "#2563EB"]
+        )
+        fig_cost.update_traces(texttemplate='$%{text:,.2f}', textposition='outside')
+        fig_cost.update_layout(plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_cost, use_container_width=True)
+
+        st.markdown(
+            f"""
+            <div class='card'>
+                <h4>📊 Analysis Summary</h4>
+                <ul>
+                    <li><strong>Ingestion Scope:</strong> The source document is approximately <strong>{doc_tokens:,} tokens</strong>.</li>
+                    <li><strong>RAG ($ {total_rag_cost:,.2f}/mo):</strong> Remains cheap and independent of overall document length because only relevant chunks are sent.</li>
+                    <li><strong>Long-Context (No Cache) ($ {total_lc_cost:,.2f}/mo):</strong> High cost because the entire document must be loaded on every single query.</li>
+                    <li><strong>Long-Context (With Cache) ($ {total_lcc_cost:,.2f}/mo):</strong> Prompt caching cuts inputs costs by <strong>{cache_discount}%</strong> for recurring queries, saving <strong>$ {(total_lc_cost - total_lcc_cost):,.2f}/mo</strong> and making long-context architectures highly viable.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True
+        )

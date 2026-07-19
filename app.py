@@ -228,4 +228,86 @@ with tab_summary:
     """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# Tab 2 and Tab 3 stubs will be added next
+# TAB 2: INTERACTIVE TOKENIZER VISUALIZER
+# -------------------------------------------------------------
+with tab_tokenizer:
+    st.markdown("<div class='section-header'>Tokenizer Visualizer</div>", unsafe_allow_html=True)
+    st.markdown(
+        "Tokenization maps characters into numerical indices that LLMs read. "
+        "Compare how text splits differ between the older `cl100k_base` tokenizer (GPT-4) "
+        "and the newer `o200k_base` tokenizer (GPT-4o/o1/GPT 5.5)."
+    )
+
+    default_token_text = (
+        "Retrieval-Augmented Generation (RAG) is a modular, multi-turn system. "
+        "It splits text into chunks, indexes them in vector databases, and performs k-NN lookup."
+    )
+    
+    user_text = st.text_area(
+        "Input text for tokenization:", 
+        value=default_token_text,
+        height=100
+    )
+
+    if user_text:
+        # Load tokenizers
+        cl100_enc = tiktoken.get_encoding("cl100k_base")
+        o200_enc = tiktoken.get_encoding("o200k_base")
+
+        tokens_cl100 = cl100_enc.encode(user_text)
+        tokens_o200 = o200_enc.encode(user_text)
+
+        col_left_tok, col_right_tok = st.columns(2)
+
+        # Highlight color palette for token visualizer
+        colors = ["#2563EB", "#D97706", "#059669", "#DC2626", "#7C3AED", "#0891B2"]
+        # Light colors for spans to keep text legible inside dark container
+        span_bg_colors = ["rgba(37, 99, 235, 0.2)", "rgba(217, 119, 6, 0.2)", "rgba(5, 150, 105, 0.2)", "rgba(220, 38, 38, 0.2)", "rgba(124, 58, 237, 0.2)", "rgba(8, 145, 178, 0.2)"]
+
+        # Tokenizer CL100K Base
+        with col_left_tok:
+            st.markdown("### `cl100k_base` Tokenizer (GPT-4)")
+            st.metric("Total Tokens", len(tokens_cl100), delta=f"{(len(user_text)/len(tokens_cl100)):.2f} chars/token", delta_color="off")
+            
+            html_cl100 = []
+            for idx, token in enumerate(tokens_cl100):
+                token_bytes = cl100_enc.decode_single_token_bytes(token)
+                token_str = token_bytes.decode('utf-8', errors='replace')
+                token_str_esc = html.escape(token_str)
+                color = colors[idx % len(colors)]
+                bg = span_bg_colors[idx % len(span_bg_colors)]
+                html_cl100.append(f'<span style="background-color: {bg}; border: 1px solid {color}; color: #F1F5F9; padding: 2px 4px; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;">{token_str_esc}</span>')
+            
+            st.markdown(f"<div class='token-container'>{''.join(html_cl100)}</div>", unsafe_allow_html=True)
+
+        # Tokenizer o200k Base
+        with col_right_tok:
+            st.markdown("### `o200k_base` Tokenizer (GPT-4o/o1/GPT 5.5)")
+            st.metric("Total Tokens", len(tokens_o200), delta=f"{(len(user_text)/len(tokens_o200)):.2f} chars/token", delta_color="inverse")
+            
+            html_o200 = []
+            for idx, token in enumerate(tokens_o200):
+                token_bytes = o200_enc.decode_single_token_bytes(token)
+                token_str = token_bytes.decode('utf-8', errors='replace')
+                token_str_esc = html.escape(token_str)
+                color = colors[idx % len(colors)]
+                bg = span_bg_colors[idx % len(span_bg_colors)]
+                html_o200.append(f'<span style="background-color: {bg}; border: 1px solid {color}; color: #F1F5F9; padding: 2px 4px; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;">{token_str_esc}</span>')
+            
+            st.markdown(f"<div class='token-container'>{''.join(html_o200)}</div>", unsafe_allow_html=True)
+
+        st.markdown("---")
+        st.markdown("#### 💡 How Vocabularies Influence Processing Efficiency")
+        st.markdown(
+            """
+            * **Vocabulary Sizes:** 
+              - Older tokenizers like `cl100k_base` use a vocabulary size of $\\approx 100,000$ unique tokens.
+              - The newer `o200k_base` tokenizer models expand this vocabulary to $\\approx 200,000$ tokens. Similarly, Llama 3/3.3 uses a $128,256$ vocabulary, and Gemini uses a $256,000$ SentencePiece vocabulary.
+            * **Efficiency Gains:** 
+              - Larger vocabularies compress text more efficiently (fewer tokens per document). 
+              - This reduces both inference times and API costs because providers charge on a per-token basis.
+            """
+        )
+
+# -------------------------------------------------------------
+# Tab 3 stub will be added next

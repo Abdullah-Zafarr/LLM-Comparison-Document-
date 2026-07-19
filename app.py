@@ -49,6 +49,11 @@ st.markdown("""
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 20px;
+        color: #0F172A;
+    }
+    
+    .card * {
+        color: #0F172A !important;
     }
     
     .token-container {

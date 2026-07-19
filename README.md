@@ -13,18 +13,19 @@ We analyze five modern cognitive architectures: **GPT 5.5 Instant**, **Claude 4.
 
 ---
 
-## 🎨 Feature Comparison Dashboard
-We evaluate and rank each model on the document summarization task across four critical dimensions:
+## 🎨 Unique Model Evaluation Benchmarks
 
-### 📊 Model Performance Evaluation Matrix
+To avoid generic rating layouts, our benchmark grades each candidate across blended qualitative metrics, tracking syntactic layout, semantic integrity, and core advantages:
 
-| Model | Summary Quality | Accuracy | Conciseness | Hallucinations | Overall Score |
-| :--- | :--- | :--- | :--- | :--- | :---: |
-| <img src="https://img.icons8.com/color/24/artificial-intelligence.png"/> **Claude 4.7 Sonnet** | Clean three-part structure, highly formal and analytical tone. Bypasses introductory filler entirely. | **Very High** — correctly captures execution trade-offs, $O(N^2)$ attention scaling limits, prompt caching cost models, and retriever dependencies. | **Outstanding** — highly descriptive yet compact, avoiding verbose elaboration while retaining technical terminologies. | **None detected** — all claims, cited parameters, and mathematical metrics map directly to the source. | **9.65 / 10** |
-| <img src="https://img.icons8.com/fluency/24/brainstorm.png"/> **DeepSeek-R1** | Employs reinforcement-learning guided reasoning checklist. Well-formatted with three clear structural sections. | **Very High** — includes specific citation structures (such as the "Lost in the Middle" study by Liu et al.) and details attention bottlenecks. | **High** — extremely concise final output, though the raw response includes a verbose internal chain-of-thought log. | **None detected** — thinking checklist successfully guards against semantic hallucination. | **9.55 / 10** |
-| <img src="https://img.icons8.com/color/24/openai.png"/> **GPT 5.5 Instant** | Clean structure featuring a simulated constraint checklist. Highly precise and abstract-like presentation. | **Very High** — correctly identifies architectural components of RAG (DPR, vector DB indexing) and needle-in-a-haystack limits. | **High** — slightly more wordy than Claude but structured nicely with cohesive takeaways and summaries. | **None detected** — maintains strict alignment with source document claims. | **9.50 / 10** |
-| <img src="https://img.icons8.com/color/24/google-logo.png"/> **Gemini 3.1 Pro** | Well-structured, excellent explanatory flow, transition between sections is highly natural and narrative. | **High** — correctly references large context windows (2M tokens) and maps RAG workflow details (k-NN search, embeddings). | **Moderate** — slightly more explanatory and verbose, especially when discussing tokenization advantages. | **Subtle** — borderline interpretive framing of motivations, but stays strictly within context bounds. | **9.30 / 10** |
-| <img src="https://img.icons8.com/color/24/meta-logo.png"/> **Llama 3.3 (70B)** | Clean, bulleted breakdown, directly readable. Excellent formatting for quick summaries. | **Moderate** — accurately captures RAG vs. long-context trade-offs, though it leaves out specific researcher names and citations. | **High** — high efficiency in word usage, directly getting to the core differences in system maintenance. | **Minor** — generalized context statements but no factual discrepancies. | **8.90 / 10** |
+### 🏆 Custom Performance & Quality Ledger
+
+| LLM Benchmark Candidate | Structure & Formatting <br>*(Quality & Conciseness)* | Fact Integrity <br>*(Accuracy & False Claims)* | Core Edge & Advantage | Benchmark Rating |
+| :--- | :--- | :--- | :--- | :--- |
+| **Claude 4.7 Sonnet** | Clean three-part layout; highly formal prose that drops conversational fluff. Perfect balance of technical density and conciseness, reading like a peer-reviewed abstract. | **Near-Perfect** — accurately captures O(N²) scaling limits, database latency overhead, and prompt caching. No retrieval deviations. | Superior syntactic layout and elite editorial tone. | `█████████▋` **9.65** / 10 |
+| **DeepSeek-R1** | Prefaces final output with an analytical thinking checklist. The final summary remains clean and compact, although the raw response log is verbose. | **High Specificity** — captures specific paper details, author names (Liu et al.), and context recall degradation curves. | Reasoning checks eliminate hallucinations. | `█████████▌` **9.55** / 10 |
+| **GPT 5.5 Instant** | Structured hierarchy containing prompt constraint checklists. Highly precise output but slightly wordier in sentence transitions. | **High Accuracy** — correctly records RAG workflow pipelines (DPR, embedding models) and native self-attention differences. | Strict execution compliance with formatting rules. | `█████████▌` **9.50** / 10 |
+| **Gemini 3.1 Pro** | Unified narrative flow linking sections together organically. However, writing style leans verbose and relies heavily on bold terms. | **High** — covers 2 million input token limits, but interprets motivations broadly rather than tracking strictly literal source facts. | Seamless global synthesis for huge context windows. | `█████████▎` **9.30** / 10 |
+| **Llama 3.3 (70B)** | Bulleted list formatting. Easy to read and digest, discarding complex phrasing in favor of direct terminology. | **Moderate** — represents basic RAG vs. long-context trade-offs, but leaves out citation details and specific cost formulas. | High-speed, cost-effective standard summaries. | `████████▉░` **8.90** / 10 |
 
 ---
 

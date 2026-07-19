@@ -1,0 +1,20 @@
+# Python virtual environments
+venv/
+venv_win/
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE configurations
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Streamlit configurations
+.streamlit/

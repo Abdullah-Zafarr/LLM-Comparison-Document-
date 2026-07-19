@@ -38,3 +38,93 @@ Table 1 displays scores out of 10 for each model on the evaluation criteria:
 *Note: Overall Score is calculated as a weighted average: $30\%$ Quality, $35\%$ Accuracy, $20\%$ Conciseness, and $15\%$ No Hallucinations.*
 
 ---
+
+## 4. Deep-Dive Model Observations
+
+### A. Claude 4.7 Sonnet
+* **Strengths:** Outstanding prose structure and formatting alignment. Outperformed on conciseness by discarding introductory filler. Synthesised key architectural concepts (such as database setup overhead and $O(N^2)$ attention scaling blocks) and captured exact formatting specifications.
+* **Weaknesses:** Lacks an active, exposed chain-of-thought buffer, though it demonstrates equivalent conceptual reasoning.
+* **Verdict:** The most balanced option for direct, high-quality user-facing summaries.
+
+### B. DeepSeek-R1
+* **Strengths:** Employs a reinforcement-learning guided thinking phase. Before generating the final response, it parses instruction rules (e.g. counting sentences to ensure the summary is exactly 3-4 sentences long). Achieved near-perfect factual precision, accurately detailing citation elements (like Liu et al.'s "Lost in the Middle" paper).
+* **Weaknesses:** The verbose internal chain-of-thought outputs add to overall token consumption, driving up latency and costs if intermediate context is billed.
+* **Verdict:** Exceptional for reasoning-heavy, factual summaries.
+
+### C. GPT 5.5 Instant
+* **Strengths:** Implements advanced cognitive planning cycles. Highly structured layout; successfully details limitations and future directions without repeating prompt boilerplate.
+* **Weaknesses:** Slightly more verbose in key takeaway summaries compared to Claude 4.7 Sonnet.
+* **Verdict:** Highly precise, but carries a higher token billing signature.
+
+### D. Gemini 3.1 Pro
+* **Strengths:** Unrivaled structural accuracy. Highlights detailed nuances of token chunk sizes (100–500 words) and specific Needle-in-a-Haystack metrics.
+* **Weaknesses:** Writing style tends to be verbose and relies heavily on bold terms.
+* **Verdict:** Best-suited for extremely long technical corpora (over 100,000 index tokens).
+
+### E. Llama 3.3 (70B)
+* **Strengths:** Extremely fast inference speed (especially when hosted via Groq). Clean, directly readable lists.
+* **Weaknesses:** Omits some subtle details from the source document (e.g., specific citation references).
+* **Verdict:** Outstanding, cost-effective open-weights model for basic applications.
+
+---
+
+## 5. Tokenizer Vocabulary Dynamics
+A key factor in LLM speed, context window limits, and cost is the **tokenizer design**. We compare the encoders:
+
+1. **Byte-Pair Encoding (BPE):** Used by OpenAI and Llama. Compresses character patterns recursively.
+2. **SentencePiece:** Used by Google's Gemini models. Able to tokenize raw byte streams, avoiding the need for specific pre-tokenizers.
+
+### BPE Tokenizer Efficiency Comparison (cl100k_base vs o200k_base)
+Using `tiktoken` on our source technical document (characters: 7,234, words: 1,026), the compression results show:
+
+* **Older/Alternative Tokenizer (`cl100k_base` - Vocabulary Size: 100,000):**
+  - Total Token Count: **1,535 tokens**
+  - Compression Ratio: **4.71 characters/token**
+* **Modern OpenAI Tokenizer (`o200k_base` - Vocabulary Size: 200,000):**
+  - Total Token Count: **1,477 tokens**
+  - Compression Ratio: **4.90 characters/token**
+
+#### Analytical Insights
+* **The Vocabulary Expansion Payoff:** By doubling vocabulary size from $100k$ to $200k$, `o200k_base` tokenizes the source document into **58 fewer tokens** ($\approx 3.8\%$ reduction).
+* **Code and Multilingual Improvements:** For programming code (which features repeating indentations) and non-Germanic languages, the expansion reduces token consumption by **$30\%-50\%$**. This occurs because common structures map to single token IDs instead of multiple character fragments.
+* **SentencePiece Advantages in Gemini (256,000 vocabulary):** The large SentencePiece index allows Gemini 3.1 Pro to achieve compression rates of **~5.5 characters/token**, lowering the input footprint on large-context operations.
+
+---
+
+## 6. Economics, Time-to-First-Token, and Caching
+When selecting an architecture, companies must model the relationship between API consumption and token volume:
+
+### Attention Scaling and Time-to-First-Token (TTFT)
+Standard multi-head attention scales quadratically ($O(N^2)$) relative to context window size. If a user supplies a 1,000,000-token prompt:
+* The model must compute cross-attention weights across a $10^{12}$ matrix.
+* This results in massive Time-to-First-Token latency (often **10–20+ seconds**), making raw long-context windows slow for interactive user interfaces.
+
+### Prompt Caching Dynamics
+To address both the computational and cost challenges of long contexts, providers have introduced **Prompt Caching** (or Context Caching):
+
+Let $T_d$ be the fixed token size of the reference document, $T_q$ the size of the query prompt, and $Q$ the query frequency per month.
+* **Without Prompt Caching:**
+  $$\text{Total Invoice Space} = Q \times (T_d + T_q)$$
+* **With Prompt Caching:**
+  $$\text{Total Invoice Space} = T_d + (Q - 1) \times (T_d \times (1 - \text{Discount})) + Q \times T_q$$
+
+With a typical caching discount of **$90\%$**, the cost of processing a constant 150,000-word document across 2,000 monthly queries drops from **$801.60 to $89.78** (assuming standard pricing). This makes long-context synthesis economically competitive with modular RAG pipelines.
+
+---
+
+## 7. Conclusions & Recommendations
+To determine the best fit for your application:
+
+```mermaid
+graph TD
+    A[Determine Corpus Data Size] --> B{Exceeds 2M Tokens?}
+    B -- Yes --> C[Use RAG Pipeline]
+    B -- No --> D{Need Global Synthesis?}
+    D -- Yes --> E[Use Long-Context with Prompt Caching]
+    D -- No --> F{High Query Frequency & Strict Budget?}
+    F -- Yes --> G[Use Optimised RAG]
+    F -- No --> H[Use Long-Context for Simplicity]
+```
+
+* **Deploy RAG when:** The document volume exceeds maximum token limits (e.g., millions of documents), low latency is critical, and queries only search for local, point-lookup facts.
+* **Deploy Long-Context when:** Simple zero-shot deployment is preferred, and the task requires comprehensive understanding of the entire text (such as full codebase edits or technical summarization).

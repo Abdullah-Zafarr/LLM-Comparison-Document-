@@ -1,0 +1,9 @@
+You are an expert technical editor. Summarize the following document. Your summary must:
+1. Provide a high-level executive summary (3-4 sentences).
+2. Outline the 3-4 key technical takeaways in a bulleted list.
+3. Detail any specific limitations or future directions mentioned in the text.
+
+Keep the language objective, precise, and professional. Avoid repeating the prompt or adding conversational filler.
+
+---
+[DOCUMENT]

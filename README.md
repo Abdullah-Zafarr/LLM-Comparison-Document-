@@ -44,5 +44,39 @@ internship-task-1/
 ## 📊 Benchmarked Models Specifications
 
 | Model Name | Creator | Context Window | Vocabulary Size | Key Architectural Specialty |
+| :--- | :--- | :---: | :---: | :--- |
+| **Claude 4.7 Sonnet** | Anthropic | 200,000 | ~65,000 | State-of-the-art reasoning, layout, prompt caching |
+| **GPT 5.5 Instant** | OpenAI | 200,000 | ~200k (`o200k`) | Reinforcement-learning guided cognitive planning |
+| **Gemini 3.1 Pro** | Google | 2,000,000 | ~256,000 | Massive context recall and context caching |
+| **DeepSeek-R1** | DeepSeek | 128,000 | ~129,536 | Reasoning model featuring Native Chain-of-Thought |
+| **Llama 3.3 (70B)** | Meta | 128,000 | ~128,256 | Top-performing open-weights baseline |
 
-Setup instructions to follow...
+---
+
+## 🚀 Getting Started & Running the Suite
+
+### 1. Set Up Virtual Environment & Dependencies
+Initialize a Python virtual environment and install standard packages:
+```bash
+# Create local virtual environment
+python -m venv venv
+
+# Activate environment (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+
+# Install packages
+pip install -r requirements.txt
+```
+
+### 2. Run Command-Line Tokenizer Analysis
+Execute the analysis script in your terminal to see character-to-token compression profiles:
+```bash
+python scripts/tokenizer_analysis.py
+```
+
+### 3. Launch the Streamlit Dashboard
+Launch the dashboard locally:
+```bash
+streamlit run app.py
+```
+Streamlit will run on your local server, usually at `http://localhost:8501`.

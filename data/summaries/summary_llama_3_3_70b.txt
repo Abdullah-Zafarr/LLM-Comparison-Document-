@@ -1,0 +1,11 @@
+### Executive Summary
+This document provides a comparative analysis of Retrieval-Augmented Generation (RAG) and Long-Context Large Language Models (LLMs) for processing large amounts of external text. RAG uses a multi-step pipeline to chunk documents and retrieve similar fragments using vector databases, while long-context LLMs feed the entire document directly into the model's context window. Although long-context models offer infrastructure simplicity, they struggle with high latency and token costs compared to RAG. The paper concludes that both architectures have specific use cases and the future lies in hybrid systems.
+
+### Key Technical Takeaways
+* **System Pipeline:** RAG requires preprocessing documents through chunking, embedding, indexing in vector databases, and using k-NN search to augment queries. Long-context LLMs simplify this process by using a single-step inference flow that processes all text in one prompt.
+* **Accuracy and Recall:** RAG is limited by retrieval noise; if the vector database retrieves incorrect chunks, the model will output hallucinations. Long-context models avoid this but suffer from the "Lost in the Middle" phenomenon, where they miss information in the center of the prompt.
+* **Financial and Computational Cost:** RAG is cheaper for high-frequency queries because it only reads a few selected chunks. Long-context models are expensive and suffer from long Time-to-First-Token (TTFT) delays, though prompt caching helps reduce cost.
+* **Maintenance & Setup:** RAG is complex and requires continuous tuning of search strategies and chunk sizes. Long-context systems are highly maintainable because they work using zero-shot prompt templates without complex backend pipelines.
+
+### Limitations and Future Directions
+The document highlights significant limitations, including high inference latency (TTFT of 10-20 seconds) for long-context models due to quadratic attention complexity, and recall issues in the middle of long prompts. RAG systems are limited because they cannot answer questions requiring overall document synthesis. Future developments are focused on hybrid systems where a dynamic engine decides whether to use selective retrieval or full-document loading depending on the query's complexity.

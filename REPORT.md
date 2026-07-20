@@ -8,7 +8,7 @@ With context windows expanding from historic limits to massive frontiers (Gemini
 1. **Retrieval-Augmented Generation (RAG):** Segment documentation, index it in a vector space search engine, and retrieve semantic chunks.
 2. **Native Long-Context Ingestion:** Load whole directories, repositories, or books directly into the model's active attention context.
 
-This research report compares five prominent frontier Large Language Models (LLMs)—**GPT 5.5 Instant, Claude 4.7 Sonnet, Gemini 3.1 Pro, DeepSeek-R1, and Llama 3.3 (70B)**—on a technical summarization task to analyze structure accuracy, token efficiency, computational latency, and retrieval cost profiles.
+This research report compares five prominent frontier Large Language Models (LLMs)—**GPT 5.5 Instant, Claude 4.7 Opus, Gemini 3.1 Pro, DeepSeek-V4, and Llama 3.3 (70B)**—on a technical summarization task to analyze structure accuracy, token efficiency, computational latency, and retrieval cost profiles.
 
 ---
 
@@ -29,8 +29,8 @@ Table 1 displays scores out of 10 for each model on the evaluation criteria:
 
 | Model Name | Summary Quality | Text Accuracy | Conciseness | Hallucinations | Overall Score |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| **Claude 4.7 Sonnet** | **9.7** | 9.6 | **9.4** | 10.0 (None) | **9.65** |
-| **DeepSeek-R1** | 9.5 | **9.7** | 9.1 | 10.0 (None) | **9.55** |
+| **Claude 4.7 Opus** | **9.7** | 9.6 | **9.4** | 10.0 (None) | **9.65** |
+| **DeepSeek-V4** | 9.5 | **9.7** | 9.1 | 10.0 (None) | **9.55** |
 | **GPT 5.5 Instant** | 9.4 | **9.7** | 9.0 | 10.0 (None) | **9.50** |
 | **Gemini 3.1 Pro** | 9.2 | 9.5 | 8.7 | 9.8 (Subtle) | **9.30** |
 | **Llama 3.3 (70B)** | 8.9 | 9.1 | 8.6 | 9.7 (Minor) | **8.90** |
@@ -41,19 +41,19 @@ Table 1 displays scores out of 10 for each model on the evaluation criteria:
 
 ## 4. Deep-Dive Model Observations
 
-### A. Claude 4.7 Sonnet
+### A. Claude 4.7 Opus
 * **Strengths:** Outstanding prose structure and formatting alignment. Outperformed on conciseness by discarding introductory filler. Synthesised key architectural concepts (such as database setup overhead and $O(N^2)$ attention scaling blocks) and captured exact formatting specifications.
 * **Weaknesses:** Lacks an active, exposed chain-of-thought buffer, though it demonstrates equivalent conceptual reasoning.
 * **Verdict:** The most balanced option for direct, high-quality user-facing summaries.
 
-### B. DeepSeek-R1
+### B. DeepSeek-V4
 * **Strengths:** Employs a reinforcement-learning guided thinking phase. Before generating the final response, it parses instruction rules (e.g. counting sentences to ensure the summary is exactly 3-4 sentences long). Achieved near-perfect factual precision, accurately detailing citation elements (like Liu et al.'s "Lost in the Middle" paper).
 * **Weaknesses:** The verbose internal chain-of-thought outputs add to overall token consumption, driving up latency and costs if intermediate context is billed.
 * **Verdict:** Exceptional for reasoning-heavy, factual summaries.
 
 ### C. GPT 5.5 Instant
 * **Strengths:** Implements advanced cognitive planning cycles. Highly structured layout; successfully details limitations and future directions without repeating prompt boilerplate.
-* **Weaknesses:** Slightly more verbose in key takeaway summaries compared to Claude 4.7 Sonnet.
+* **Weaknesses:** Slightly more verbose in key takeaway summaries compared to Claude 4.7 Opus.
 * **Verdict:** Highly precise, but carries a higher token billing signature.
 
 ### D. Gemini 3.1 Pro
